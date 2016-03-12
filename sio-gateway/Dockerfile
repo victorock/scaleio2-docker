@@ -2,7 +2,7 @@
 #
 # Installs SCALEIO 2.0
 # Packages: EMC-ScaleIO-gateway-2.0-5014.0.x86_64
-FROM centos:c7-systemd
+FROM centos/c7-systemd
 MAINTAINER Victor da Costa <victorockeiro@gmail.com>
 
 ADD etc /etc
