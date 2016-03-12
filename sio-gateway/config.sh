@@ -9,7 +9,4 @@ rpm --rebuilddb
 systemctl daemon-reload
 
 puppet apply --debug --verbose --color false --detailed-exitcodes \
-/etc/puppet/modules/scaleio2/examples/fuel-sio-tb.pp || [[ $? == 2 ]]
-
-systemctl enable mdm.service
-systemctl restart mdm.service
+/etc/puppet/modules/scaleio2/examples/fuel-sio-gateway.pp || [[ $? == 2 ]]
