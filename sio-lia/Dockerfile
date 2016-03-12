@@ -5,11 +5,11 @@
 FROM centos:c7-systemd
 MAINTAINER Victor da Costa <victorockeiro@gmail.com>
 
-RUN yum -y install epel-release yum-utils
-RUN yum-config-manager --add-repo https://bintray.com/victorock/rpm/rpm
-RUN yum-config-manager --enable bintraybintray-victorock-rpm
-RUN yum -y install numactl libaio openssl openssl-devel
-RUN yum -y install TOKEN='Scaleio123' EMC-ScaleIO-lia.x86_64
-RUN systemctl enable lia.service
+ADD etc /etc
+ADD start.sh /usr/local/bin/
+ADD setup.sh /usr/local/bin/
+
+RUN chmod +x /usr/local/bin/{setup,start}.sh
+
 EXPOSE 9099
 CMD [“/usr/sbin/init”]

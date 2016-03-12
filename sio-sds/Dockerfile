@@ -5,10 +5,11 @@
 FROM centos:c7-systemd
 MAINTAINER Victor da Costa <victorockeiro@gmail.com>
 
-RUN yum -y install epel-release yum-utils
-RUN yum-config-manager --add-repo https://bintray.com/victorock/rpm/rpm
-RUN yum-config-manager --enable bintraybintray-victorock-rpm
-RUN yum -y install EMC-ScaleIO-sds.x86_64
-RUN systemctl enable sds.service
+ADD etc /etc
+ADD start.sh /usr/local/bin/
+ADD setup.sh /usr/local/bin/
+
+RUN chmod +x /usr/local/bin/{setup,start}.sh
+
 EXPOSE 7072-7076 25640-25644
 CMD [“/usr/sbin/init”]
