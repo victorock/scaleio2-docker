@@ -1,7 +1,7 @@
 # VERSION               0.1
 #
 # Installs SCALEIO 2.0
-# Packages: EMC-ScaleIO-gateway-2.0-5014.0.x86_64
+# Packages: <none>
 
 FROM centos/c7-systemd
 MAINTAINER Victor da Costa <victorockeiro@gmail.com>
@@ -15,4 +15,4 @@ RUN chmod +x /usr/local/bin/{setup,start}.sh
 RUN /usr/local/bin/setup.sh
 RUN /usr/local/bin/start.sh
 
-CMD ["/usr/sbin/init"]
+VOLUME /etc/puppet

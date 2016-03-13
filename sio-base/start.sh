@@ -5,4 +5,4 @@ rm -f /var/lib/rpm/__db.*
 rpm --rebuilddb
 
 # Run puppet to apply custom config
-systemctl daemon-reload
+#systemctl daemon-reload
