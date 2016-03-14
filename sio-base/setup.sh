@@ -10,7 +10,7 @@ EOF
 
 yum -y install epel-release
 yum -y install tar wget mutt python python-paramiko libaio numactl openssl \
-  openssl-devel puppet java-1.8.0-openjdk
+  openssl-devel puppet java-1.8.0-openjdk initscripts
 
 #puppet module install puppetlabs-firewall
 #puppet module install puppetlabs-java

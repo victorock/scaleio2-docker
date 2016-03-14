@@ -3,16 +3,26 @@
 # Installs SCALEIO 2.0
 # Packages: EMC-ScaleIO-mdm-2.0-5014.0.el7.x86_64
 
-FROM victorock/sio-base
+FROM victorock/scaleio2:base
 MAINTAINER "Victor da Costa" <victorockeiro@gmail.com>
 
+ENV PASSWORD            "Scaleio123"
 ENV MDM_ROLE_IS_MANAGER 1
 
-ADD config.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/config.sh
+ENV MDM1                ""
+ENV MDM1_NAME           ""
 
-RUN yum -y install EMC-ScaleIO-mdm.x86_64
-RUN systemctl enable mdm.service
-RUN systemctl restart mdm.service
+ENV MDM2                ""
+ENV MDM2_NAME           ""
+
+ENV TB1                 ""
+ENV TB1_NAME            ""
+
+ENV TB2                 ""
+ENV TB2_NAME            ""
+
+ADD start.sh /usr/local/bin/
+ADD setup.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/{setup,start}.sh
 
 EXPOSE 6611 9011 25620
