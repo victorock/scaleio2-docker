@@ -3,17 +3,17 @@
 # Installs SCALEIO 2.0
 # Packages: EMC-ScaleIO-gateway-2.0-5014.0.x86_64
 
-FROM victorock/sio-base
+FROM victorock/scaleio2:base
 MAINTAINER "Victor da Costa" <victorockeiro@gmail.com>
 
-ENV GATEWAY_ADMIN_PASSWORD "Scaleio123"
-ENV SIO_GW_JAVA "/usr/lib/jvm"
+ENV GATEWAY_ADMIN_PASSWORD  "${PASSWORD}"
+ENV SIO_GW_JAVA             "/usr/lib/jvm/jre/"
+ENV MDM1                    ""
+ENV MDM2                    ""
+ENV MDM3                    ""
 
-ADD config.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/config.sh
-
-RUN yum -y install EMC-ScaleIO-gateway.x86_64
-RUN systemctl enable scaleio-gateway.service
-RUN systemctl restart scaleio-gateway.service
+ADD start.sh /usr/local/bin/
+ADD setup.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/{setup,start}.sh
 
 EXPOSE 80 443

@@ -3,14 +3,11 @@
 # Installs SCALEIO 2.0
 # Packages: EMC-ScaleIO-sds-2.0-5014.0.el7.x86_64
 
-FROM victorock/sio-base
+FROM victorock/scaleio2:base
 MAINTAINER "Victor da Costa" <victorockeiro@gmail.com>
 
-ADD config.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/config.sh
-
-RUN yum -y install EMC-ScaleIO-sds.x86_64
-RUN systemctl enable sds.service
-RUN systemctl restart sds.service
+ADD start.sh /usr/local/bin/
+ADD setup.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/{setup,start}.sh
 
 EXPOSE 7072-7076 25640-25644
