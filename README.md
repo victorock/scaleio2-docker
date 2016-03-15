@@ -85,6 +85,9 @@ Installation procedure:
 ### START
   docker exec SDS /usr/local/bin/start.sh
 
+### SETUP
+  docker exec SDS /usr/local/bin/start.sh
+
 # All Hosts
 ## LIA
 ### RUN
