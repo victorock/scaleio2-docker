@@ -3,7 +3,7 @@
 # Installs SCALEIO 2.0
 # Packages: EMC-ScaleIO-mdm-2.0-5014.0.el7.x86_64
 
-FROM victorock/scaleio2:lia
+FROM victorock/scaleio2:base
 MAINTAINER "Victor da Costa" <victorockeiro@gmail.com>
 
 ENV PASSWORD            "Scaleio123"
