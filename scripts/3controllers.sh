@@ -1,36 +1,47 @@
 #!/bin/bash
 
 function 3c_step0() {
-  node_mdm1
-  docker-compose -f config/controller.yaml build
+  echo "Building MDM1.."
+  ( node_mdm1 && \
+    docker-compose -f config/controller.yaml build )&
 
-  node_mdm2
-  docker-compose -f config/controller.yaml build
+  echo "Building MDM2.."
+  ( node_mdm2 && \
+    docker-compose -f config/controller.yaml build )&
 
-  node_tb1
-  docker-compose -f config/controller-tb.yaml build
-
+  echo "Building TB1.."
+  ( node_tb1 && \
+    docker-compose -f config/controller-tb.yaml build )&
 }
 
 function 3c_step1() {
-  node_mdm1
-  docker-compose -f config/controller.yaml up
 
-  node_mdm2
-  docker-compose -f config/controller.yaml up
+  wait_compose_finish
 
-  node_tb1
-  docker-compose -f config/controller-tb.yaml up
+  echo "Starting MDM1.."
+  ( node_mdm1 && \
+    docker-compose -f config/controller.yaml up -d )&
 
+  echo "Starting MDM2.."
+  ( node_mdm2 && \
+    docker-compose -f config/controller.yaml up -d )&
+
+  echo "Starting TB1.."
+  ( node_tb1 && \
+    docker-compose -f config/controller-tb.yaml up -d )&
 }
 
 function 3c_step2() {
-  node_mdm1
-  mdm_exec
 
-  node_mdm2
-  mdm_exec
+  wait_compose_finish
+  ( node_mdm1 && mdm_exec_start && gw_exec_start )
+  ( node_mdm2 && mdm_exec_start && gw_exec_start )
+  ( node_tb1  && mdm_exec_start && gw_exec_start )
 
-  node_tb1
-  tb_exec
+  wait_docker_finish
+  ( node_mdm1 && mdm_exec_setup && gw_exec_setup )
+  ( node_mdm2 && gw_exec_setup )
+  ( node_tb1  && gw_exec_setup )
+
+
 }

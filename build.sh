@@ -7,12 +7,12 @@
 
 # Deploy Controller 1 to 3
 function c1-c3() {
-  3c_step1
+  3c_step0
 }
 
 # Deploy Controller 4 to 5
 function c4-c5(){
-  5c_step1
+  5c_step0
 }
 
 # Deploy SDS on SERVER
@@ -31,6 +31,7 @@ case $1 in
     echo "Building 5-Controllers.."
     c1-c3
     c4-c5
+    echo "DONE"
   ;;
   "sds")
     echo "Building SDS on \"${2}\".."
@@ -42,6 +43,6 @@ case $1 in
     echo "Example:"
     echo "1) $0 3c"
     echo "2) $0 5c"
-    echo "2) $0 sds <ip>"
+    echo "3) $0 sds <ip>"
   ;;
 esac

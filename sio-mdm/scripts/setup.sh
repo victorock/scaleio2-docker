@@ -5,8 +5,8 @@ function admin_login(){
   pass=$2
   scli  --login \
         --username admin \
-        --password "${pass}" \
-        --mdm_ip "${master}" \
+        --password ${pass} \
+        --mdm_ip ${master} \
         --approve_certificate
 }
 
@@ -14,12 +14,14 @@ function admin_password_change(){
   master=$1
   pass=$2
   new_pass=$3
-  admin_login "${master}" "${pass}" &&
+  admin_login ${master} ${pass}
   scli  --set_password \
-        --old_password "${pass}" \
-        --new_password "${new_pass}" \
-        --mdm_ip "${master}" \
+        --old_password ${pass} \
+        --new_password ${new_pass} \
+        --mdm_ip ${master} \
         --approve_certificate
+
+  sleep 2
 }
 
 function cluster_tb_add(){
@@ -27,13 +29,14 @@ function cluster_tb_add(){
     pass=$2
     tb=$3
     tb_name=$4
-    admin_login "${master}" "${pass}" && \
+    admin_login ${master} ${pass} && \
     scli  --add_standby_mdm \
-          --new_mdm_ip "${tb}" \
+          --new_mdm_ip ${tb} \
           --mdm_role tb \
-          --new_mdm_management_ip "${tb}" \
-          --new_mdm_name "${tb_name}" \
+          --new_mdm_management_ip ${tb} \
+          --new_mdm_name ${tb_name} \
           --approve_certificate
+    sleep 2
 }
 
 function cluster_mdm_add(){
@@ -41,21 +44,22 @@ function cluster_mdm_add(){
     pass=$2
     mdm=$3
     mdm_name=$4
-    admin_login "${master}" "${pass}" && \
+    admin_login ${master} ${pass} && \
     scli  --add_standby_mdm \
-          --new_mdm_ip "${mdm}" \
+          --new_mdm_ip ${mdm} \
           --mdm_role manager \
-          --new_mdm_management_ip "${mdm}" \
-          --new_mdm_name "${mdm_name}" \
+          --new_mdm_management_ip ${mdm} \
+          --new_mdm_name ${mdm_name} \
           --approve_certificate
+    sleep 2
 }
 
 # If we can login cluster is already configured
 function check_cluster_exists(){
   master=$1
   pass=$2
-  admin_login "${master}" "${pass}" || \
-  admin_login "${master}" "admin"
+  admin_login ${master} ${pass} || \
+  admin_login ${master} admin
 }
 
 function init_cluster(){
@@ -63,14 +67,15 @@ function init_cluster(){
   pass=$2
   master_name=$3
   scli  --create_mdm_cluster \
-         --master_mdm_ip "${master}" \
-         --master_mdm_management_ip "${master}" \
-         --master_mdm_name "${master_name}" \
+         --master_mdm_ip ${master} \
+         --master_mdm_management_ip ${master} \
+         --master_mdm_name ${master_name} \
          --accept_license \
          --approve_certificate \
          --use_nonsecure_communication
   sleep 20
-  admin_password_change "${master}" "admin" "${pass}"
+
+  admin_password_change ${master} admin ${pass}
 }
 
 function cluster_mode3(){
@@ -78,13 +83,15 @@ function cluster_mode3(){
   pass=$2
   mdm2=$3
   tb1=$4
-  admin_login "${master}" "${pass}" && \
-  scli  --mdm_ip "${master}" \
+  admin_login ${master} ${pass} && \
+  scli  --mdm_ip ${master} \
         --switch_cluster_mode \
         --cluster_mode 3_node \
-        --add_slave_mdm_ip "${mdm2}" \
-        --add_tb_ip "${tb1}" \
+        --add_slave_mdm_ip ${mdm2} \
+        --add_tb_ip ${tb1} \
         --i_am_sure
+
+  sleep 4
 }
 
 function cluster_mode5(){
@@ -94,39 +101,36 @@ function cluster_mode5(){
   mdm3=$4
   tb1=$5
   tb2=$6
-  admin_login "${master}" "${pass}" && \
-  scli  --mdm_ip "${master}" \
+  admin_login ${master} ${pass} && \
+  scli  --mdm_ip ${master} \
         --switch_cluster_mode \
         --cluster_mode 5_node \
-        --add_slave_mdm_ip "${mdm2},${mdm3}" \
-        --add_tb_ip "${tb1},${tb2}" \
+        --add_slave_mdm_ip ${mdm2},${mdm3} \
+        --add_tb_ip ${tb1},${tb2} \
         --i_am_sure
+
+  sleep 4
 }
 
 MDMS=""
-test -z "${MDM1}" || MDMS="${MDM1}"
-test -z "${MDM2}" || MDMS="${MDMS},${MDM2}"
-test -z "${MDM3}" || MDMS="${MDMS},${MDM3}"
+test -z ${MDM1} || MDMS=${MDM1}
+test -z ${MDM2} || MDMS=${MDMS},${MDM2}
+test -z ${MDM3} || MDMS=${MDMS},${MDM3}
 
 # INIT CLUSTER
-check_cluster_exists "${MDMS}" "${PASSWORD}" || \
-  init_cluster "${MDM1}" "${PASSWORD}" "${MDM1_NAME}"
+check_cluster_exists ${MDMS} ${PASSWORD} || \
+  init_cluster ${MDM1} ${PASSWORD} ${MDM1_NAME}
 
 # Configure MDM2
-test -z "${MDM2}" ||    cluster_mdm_add "${MDMS}" "${PASSWORD}" "${MDM2}" "${MDM2_NAME}"
+test -z ${MDM2} ||    cluster_mdm_add ${MDMS} ${PASSWORD} ${MDM2} ${MDM2_NAME}
 
 # Configure MDM3
-test -z "${MDM3}" ||    cluster_mdm_add "${MDMS}" "${PASSWORD}" "${MDM3}" "${MDM3_NAME}"
+test -z ${MDM3} ||    cluster_mdm_add ${MDMS} ${PASSWORD} ${MDM3} ${MDM3_NAME}
 
 # Configure TB1 and cluster_mode3
-test -z "${TB1}"  || (  cluster_tb_add "${MDMS}" "${PASSWORD}" "${TB1}" "${TB1_NAME}" && \
-                        cluster_mode3 "${MDMS}" "${PASSWORD}" "${MDM2}" "${TB1}" )
+test -z ${TB1}  || (  cluster_tb_add ${MDMS} ${PASSWORD} ${TB1} ${TB1_NAME} && \
+                        cluster_mode3 ${MDMS} ${PASSWORD} ${MDM2} ${TB1} )
 
 # Configure TB2 and cluster_mode5
-test -z "${TB2}"  || (  cluster_tb_add "${MDMS}" "${PASSWORD}" "${TB2}" "${TB2_NAME}" && \
-                        cluster_mode5 "${MDMS}" "${PASSWORD}" "${MDM2}" "${MDM3}" "${TB1}" "${TB2}")
-
-## RELOAD services
-systemctl enable mdm.service
-systemctl restart mdm.service
-systemctl status mdm.service
+test -z ${TB2}  || (  cluster_tb_add ${MDMS} ${PASSWORD} ${TB2} ${TB2_NAME} && \
+                        cluster_mode5 ${MDMS} ${PASSWORD} ${MDM2} ${MDM3} ${TB1} ${TB2} )

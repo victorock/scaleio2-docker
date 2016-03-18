@@ -5,6 +5,7 @@ services:
     restart: always
     network_mode: host
     env_file: config.env
+    build: ../sio-base/
     image: victorock/scaleio2:base
     container_name: SIO-BASE
 
@@ -13,6 +14,7 @@ services:
     restart: always
     network_mode: host
     env_file: config.env
+    build: ../sio-sds/
     image: victorock/scaleio2:sds
     container_name: SIO-SDS
     ports:
@@ -22,3 +24,5 @@ services:
       - SIO-BASE
     volumes_from:
       - SIO-BASE
+    volumes:
+      - /dev/shm

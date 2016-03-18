@@ -28,4 +28,5 @@ COPY scripts /usr/local/scripts
 RUN chmod +x /usr/local/scripts/*
 
 EXPOSE 6611 9011 25620
+VOLUME /dev/shm
 CMD ["/usr/sbin/init"]

@@ -2,6 +2,7 @@ version: '2'
 services:
   SIO-BASE:
     restart: always
+    build: ../sio-base/
     image: victorock/scaleio2:base
     container_name: SIO-BASE
 
@@ -10,6 +11,7 @@ services:
     restart: always
     network_mode: host
     env_file: config.env
+    build: ../sio-gateway/
     image: victorock/scaleio2:gateway
     container_name: SIO-GW
     ports:
@@ -19,12 +21,15 @@ services:
       - SIO-BASE
     volumes_from:
       - SIO-BASE
+    volumes:
+      - /dev/shm
 
   SIO-MDM:
     privileged: true
     restart: always
     network_mode: host
     env_file: config.env
+    build: ../sio-mdm/
     image: victorock/scaleio2:mdm
     container_name: SIO-MDM
     environment:
@@ -37,3 +42,5 @@ services:
       - SIO-BASE
     volumes_from:
       - SIO-BASE
+    volumes:
+      - /dev/shm
