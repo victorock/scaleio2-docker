@@ -12,8 +12,8 @@ ENV MDM1                    ""
 ENV MDM2                    ""
 ENV MDM3                    ""
 
-ADD start.sh /usr/local/bin/
-ADD setup.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/{setup,start}.sh
+COPY scripts /usr/local/scripts
+RUN chmod +x /usr/local/scripts/*
 
 EXPOSE 80 443
+CMD ["/usr/sbin/init"]

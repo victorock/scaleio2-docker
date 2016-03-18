@@ -7,10 +7,16 @@ rpm --rebuilddb
 # Run puppet to apply custom config
 systemctl daemon-reload
 
-# INSTALL SDS
-yum -y install EMC-ScaleIO-lia.x86_64
+# Install MDM
+# Dependence of systemd and volume for configuration persistence
+yum -y install EMC-ScaleIO-sds"${INSTANCE}".x86_64
 
 ## FUTURE
 # For automation run configuration through puppet
 #puppet apply --debug --verbose --color false --detailed-exitcodes \
-#/etc/puppet/modules/scaleio2/examples/sio-lia.pp || [[ $? == 2 ]]
+#/etc/puppet/modules/scaleio2/examples/sio-sds.pp || [[ $? == 2 ]]
+
+# Confirm service is started correctly
+systemctl enable sds.service
+systemctl start sds.service
+systemctl status sds.service

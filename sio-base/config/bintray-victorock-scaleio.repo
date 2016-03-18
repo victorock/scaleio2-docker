@@ -1,0 +1,5 @@
+[bintray-victorock-scaleio]
+name=bintray-victorock-scaleio
+baseurl=https://dl.bintray.com/victorock/scaleio/centos/\$releasever/x86_64/
+gpgcheck=0
+enabled=1

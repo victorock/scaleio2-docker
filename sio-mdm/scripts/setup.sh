@@ -50,6 +50,14 @@ function cluster_mdm_add(){
           --approve_certificate
 }
 
+# If we can login cluster is already configured
+function check_cluster_exists(){
+  master=$1
+  pass=$2
+  admin_login "${master}" "${pass}" || \
+  admin_login "${master}" "admin"
+}
+
 function init_cluster(){
   master=$1
   pass=$2
@@ -59,7 +67,8 @@ function init_cluster(){
          --master_mdm_management_ip "${master}" \
          --master_mdm_name "${master_name}" \
          --accept_license \
-         --approve_certificate
+         --approve_certificate \
+         --use_nonsecure_communication
   sleep 20
   admin_password_change "${master}" "admin" "${pass}"
 }
@@ -94,23 +103,30 @@ function cluster_mode5(){
         --i_am_sure
 }
 
+MDMS=""
+test -z "${MDM1}" || MDMS="${MDM1}"
+test -z "${MDM2}" || MDMS="${MDMS},${MDM2}"
+test -z "${MDM3}" || MDMS="${MDMS},${MDM3}"
+
 # INIT CLUSTER
-init_cluster "${MDM1}" "${PASSWORD}" "${MDM1_NAME}"
+check_cluster_exists "${MDMS}" "${PASSWORD}" || \
+  init_cluster "${MDM1}" "${PASSWORD}" "${MDM1_NAME}"
 
 # Configure MDM2
-test -z "${MDM2}" ||    cluster_mdm_add "${MDM1}" "${PASSWORD}" "${MDM2}" "${MDM2_NAME}"
+test -z "${MDM2}" ||    cluster_mdm_add "${MDMS}" "${PASSWORD}" "${MDM2}" "${MDM2_NAME}"
 
 # Configure MDM3
-test -z "${MDM3}" ||    cluster_mdm_add "${MDM1}" "${PASSWORD}" "${MDM3}" "${MDM3_NAME}"
+test -z "${MDM3}" ||    cluster_mdm_add "${MDMS}" "${PASSWORD}" "${MDM3}" "${MDM3_NAME}"
 
 # Configure TB1 and cluster_mode3
-test -z "${TB1}"  || (  cluster_tb_add "${MDM1}" "${PASSWORD}" "${TB1}" "${TB1_NAME}" && \
-                        cluster_mode3 "${MDM1}" "${PASSWORD}" "${MDM2}" "${TB1}" )
+test -z "${TB1}"  || (  cluster_tb_add "${MDMS}" "${PASSWORD}" "${TB1}" "${TB1_NAME}" && \
+                        cluster_mode3 "${MDMS}" "${PASSWORD}" "${MDM2}" "${TB1}" )
 
 # Configure TB2 and cluster_mode5
-test -z "${TB2}"  || (  cluster_tb_add "${MDM1}" "${PASSWORD}" "${TB2}" "${TB2_NAME}" && \
-                        cluster_mode5 "${MDM1}" "${PASSWORD}" "${MDM2}" "${MDM3}" "${TB1}" "${TB2}")
+test -z "${TB2}"  || (  cluster_tb_add "${MDMS}" "${PASSWORD}" "${TB2}" "${TB2_NAME}" && \
+                        cluster_mode5 "${MDMS}" "${PASSWORD}" "${MDM2}" "${MDM3}" "${TB1}" "${TB2}")
 
 ## RELOAD services
 systemctl enable mdm.service
 systemctl restart mdm.service
+systemctl status mdm.service

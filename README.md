@@ -2,9 +2,16 @@
 # Containers to run ScaleIO
 The configuration of ScaleIO is not embedded in the container.
 Puppet is installed inside of the containers.
-Please, consider using puppet-scaleio2 if you would like to proceed with automation/configuration.
+Please, consider using puppet-scaleio2 if you would like to proceed with
+automation/configuration.
 
 Installation procedure:
+Host1: MDM1, GW, SDS (optional)
+Host2: MDM2, GW, SDS (optional)
+Host3: TB1, GW, SDS (optional)
+
+The data resides within the container, so consider mounting external /opt/emc
+inside of the container for data persistence and facilitate upgrades.
 
 # Host1
 ## MDM1
@@ -13,6 +20,7 @@ Installation procedure:
     --privileged \
     -P \
     --net=host \
+    --volumes-from SIO-BASE \
     -e PASSWORD="Scaleio123" \
     -e MDM1="ip.ip.ip.ip" \
     -e MDM1_NAME="MDM1" \

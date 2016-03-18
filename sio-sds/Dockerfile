@@ -6,8 +6,10 @@
 FROM victorock/scaleio2:base
 MAINTAINER "Victor da Costa" <victorockeiro@gmail.com>
 
-ADD start.sh /usr/local/bin/
-ADD setup.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/{setup,start}.sh
+ENV INSTANCE ""
+
+COPY scripts /usr/local/scripts
+RUN chmod +x /usr/local/scripts/*
 
 EXPOSE 7072-7076 25640-25644
+CMD ["/usr/sbin/init"]
