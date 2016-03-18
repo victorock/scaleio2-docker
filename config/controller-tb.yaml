@@ -1,0 +1,39 @@
+version: '2'
+services:
+  SIO-BASE:
+    restart: always
+    image: victorock/scaleio2:base
+    container_name: SIO-BASE
+
+  SIO-GW:
+    privileged: true
+    restart: always
+    network_mode: host
+    env_file: config.env
+    image: victorock/scaleio2:gateway
+    container_name: SIO-GW
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - SIO-BASE
+    volumes_from:
+      - SIO-BASE
+
+  SIO-MDM:
+    privileged: true
+    restart: always
+    network_mode: host
+    env_file: config.env
+    image: victorock/scaleio2:mdm
+    container_name: SIO-MDM
+    environment:
+      MDM_ROLE_IS_MANAGER: "0"
+    ports:
+      - "6611:6611"
+      - "9011:9011"
+      - "25600:25600"
+    depends_on:
+      - SIO-BASE
+    volumes_from:
+      - SIO-BASE

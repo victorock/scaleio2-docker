@@ -7,10 +7,16 @@ rpm --rebuilddb
 # Run puppet to apply custom config
 systemctl daemon-reload
 
-# INSTALL MDM
+# Install MDM
+# Dependence of systemd and volume for configuration persistence
 yum -y install EMC-ScaleIO-mdm.x86_64
 
 ## FUTURE
 # For automation run configuration through puppet
 #puppet apply --debug --verbose --color false --detailed-exitcodes \
 #/etc/puppet/modules/scaleio2/examples/sio-mdm.pp || [[ $? == 2 ]]
+
+# Confirm service is started correctly
+systemctl enable mdm.service
+systemctl start mdm.service
+systemctl status mdm.service

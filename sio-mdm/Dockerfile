@@ -3,7 +3,7 @@
 # Installs SCALEIO 2.0
 # Packages: EMC-ScaleIO-mdm-2.0-5014.0.el7.x86_64
 
-FROM victorock/scaleio2:base
+FROM victorock/scaleio2:lia
 MAINTAINER "Victor da Costa" <victorockeiro@gmail.com>
 
 ENV PASSWORD            "Scaleio123"
@@ -15,14 +15,17 @@ ENV MDM1_NAME           ""
 ENV MDM2                ""
 ENV MDM2_NAME           ""
 
+ENV MDM3                ""
+ENV MDM3_NAME           ""
+
 ENV TB1                 ""
 ENV TB1_NAME            ""
 
 ENV TB2                 ""
 ENV TB2_NAME            ""
 
-ADD start.sh /usr/local/bin/
-ADD setup.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/{setup,start}.sh
+COPY scripts /usr/local/scripts
+RUN chmod +x /usr/local/scripts/*
 
 EXPOSE 6611 9011 25620
+CMD ["/usr/sbin/init"]

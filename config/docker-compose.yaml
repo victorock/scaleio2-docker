@@ -1,0 +1,60 @@
+version: '2'
+network_mode: host
+privileged: true
+restart: always
+env_file: config.env
+
+services:
+  SIO-BASE:
+    image: victorock/scaleio2:base
+
+  GATEWAY:
+    image: victorock/scaleio2:gateway
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - SIO-BASE
+    volumes_from:
+      - SIO-BASE
+
+  MDM:
+    image: victorock/scaleio2:mdm
+    ports:
+      - "6611:6611"
+      - "9011:9011"
+      - "25620:25620"
+    depends_on:
+      - SIO-BASE
+    volumes_from:
+      - SIO-BASE
+
+  TB:
+    image: victorock/scaleio2:mdm
+    environment:
+      MDM_ROLE_IS_MANAGER: "0"
+    ports:
+      - "6611:6611"
+      - "9011:9011"
+      - "25600:25600"
+    depends_on:
+      - SIO-BASE
+    volumes_from:
+      - SIO-BASE
+
+  SDS:
+    image: victorock/scaleio2:sds
+    ports:
+      - "7072:7072"
+      - "7074:7074"
+      - "7075:7075"
+      - "7076:7076"
+      - "25640:25640"
+      - "25641:25641"
+      - "25642:25642"
+      - "25643:25643"
+      - "25644:25644"
+    depends_on:
+      - SIO-BASE
+    volumes_from:
+      - SIO-BASE
