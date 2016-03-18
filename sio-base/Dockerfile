@@ -28,8 +28,8 @@ RUN yum -y update && \
   python \
   python-paramiko \
   tar  \
-  wget && \
-  rm -f /var/lib/rpm/__db.* && \
+  wget
+RUN rm -f /var/lib/rpm/__db.* && \
   rpm --rebuilddb
 
 RUN mkdir -p /opt/emc/scaleio/{mdm,sds,sds1,sds2,sds3,sds4,gateway,lia}/cfg
