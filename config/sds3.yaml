@@ -14,6 +14,8 @@ services:
     build: ../sio-sds/
     image: victorock/scaleio2:sds
     container_name: SIO-SDS3
+    environment:
+      INSTANCE: 3
     ports:
       - "7075:7075"
       - "25643:25643"

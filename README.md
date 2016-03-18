@@ -40,29 +40,30 @@ The server were the containers will be deployed need to have at least 3GB of Mem
 # Config
 
 * Edit: config/config.env
+
 ```
 # ScaleIO Password
-PASSWORD="Scaleio123"
+PASSWORD=Scaleio123
 
 # MDM1
-MDM1="192.168.69.137"
-MDM1_NAME="MDM1"
+MDM1=192.168.69.137
+MDM1_NAME=MDM1
 
 # MDM2
-MDM2="192.168.69.138"
-MDM2_NAME="MDM2"
+MDM2=192.168.69.138
+MDM2_NAME=MDM2
 
 # MDM3
-MDM3=""
-MDM3_NAME=""
+MDM3=
+MDM3_NAME=
 
 #TB1
-TB1="192.168.69.139"
-TB1_NAME="TB1"
+TB1=192.168.69.139
+TB1_NAME=TB1
 
 # TB2
-TB2=""
-TB2_NAME=""
+TB2=
+TB2_NAME=
 ```
 
 # Build
@@ -161,7 +162,8 @@ DOCKER_HOST="tcp://IP_HOST8:2376" docker-compose -f config/sds.yaml rm -fv
 # TODO
 
 - TLS
-- DOCKER-SWARM CHECK
+- DOCKER-SWARM
+  - CREATE PODs (NX-<SERVICE>)
 - destroy.sh
 - upgrade/update description of commands
 
