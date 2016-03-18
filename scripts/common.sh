@@ -1,5 +1,19 @@
 #!/bin/bash
 
+function wait_compose_finish() {
+  while [ "$(pgrep "docker-compose")" ]; do
+    echo "docker-compose running... (waiting)"
+    sleep 10
+  done
+}
+
+function wait_docker_finish() {
+  while [ "$(pgrep "docker")" ]; do
+    echo "docker running... (waiting)"
+    sleep 10
+  done
+}
+
 function node_mdm1(){
   server="${MDM1:?'$MDM1 not specified in config/config.env'}"
   node_general "${server}"
@@ -30,24 +44,28 @@ function node_general(){
   export DOCKER_HOST="tcp://${server}:2376"
 }
 
-function mdm_exec(){
-  docker exec -it SIO-MDM /usr/local/scripts/start.sh
-  docker exec -it SIO-MDM /usr/local/scripts/setup.sh
+function mdm_exec_start(){
+  docker exec SIO-MDM /usr/local/scripts/start.sh
 }
 
-function gw_exec(){
-  docker exec -it SIO-GW /usr/local/scripts/start.sh
-  docker exec -it SIO-GW /usr/local/scripts/setup.sh
+function mdm_exec_setup(){
+  docker exec SIO-MDM /usr/local/scripts/setup.sh
 }
 
-function tb_exec(){
-  ## We keep the name SIO-MDM to avoid running MDM and TB in the same host
-  docker exec -it SIO-MDM /usr/local/scripts/start.sh
-  #TB doesn't runs setup
+function gw_exec_start(){
+  docker exec SIO-GW /usr/local/scripts/start.sh
 }
 
-function sds_exec(){
+function gw_exec_setup(){
+  docker exec SIO-GW /usr/local/scripts/setup.sh
+}
+
+function sds_exec_start(){
   INSTANCE="${1:-}"
-  docker exec -it SDS"${INSTANCE}" /usr/local/scripts/start.sh
-  #TB doesn't runs setup
+  docker exec SIO-SDS${INSTANCE} /usr/local/scripts/start.sh
+}
+
+function sds_exec_setup(){
+  INSTANCE="${1:-}"
+  docker exec SIO-SDS${INSTANCE} /usr/local/scripts/setup.sh
 }

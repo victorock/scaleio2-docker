@@ -34,6 +34,7 @@ case $1 in
     echo "Deploying 5-Controllers.."
     c1-c3
     c4-c5
+    echo "DONE"
   ;;
   "sds")
     echo "Deploying SDS on \"${2}\".."
@@ -45,7 +46,7 @@ case $1 in
     echo "Example:"
     echo "1) $0 3c"
     echo "2) $0 5c"
-    echo "After Controller deployment:"
-    echo "$0 sds 10.10.5.10"
+    echo "3) After Controller deployment:"
+    echo "   $0 sds 10.10.10.10"
   ;;
 esac

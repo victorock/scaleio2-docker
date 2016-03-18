@@ -16,4 +16,5 @@ COPY scripts /usr/local/scripts
 RUN chmod +x /usr/local/scripts/*
 
 EXPOSE 80 443
+VOLUME /dev/shm
 CMD ["/usr/sbin/init"]

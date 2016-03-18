@@ -14,23 +14,23 @@ ENV PASSWORD  "Scaleio123"
 COPY config/bintray-victorock-scaleio.repo /etc/yum.repos.d/
 
 # RPM Manipulation
-RUN yum -y install epel-release && \
-  yum -y install  \
-  initscripts \
-  java-1.8.0-openjdk-devel \
-  libaio \
-  mutt \
-  numactl \
-  openssl \
-  openssl-devel \
-  puppet \
-  python \
-  python-paramiko \
-  tar  \
-  wget
-RUN yum -y update && \
-  rm -f /var/lib/rpm/__db.* && \
-  rpm --rebuilddb
+RUN yum -y update -x 'iputils*' && \
+    yum -y install epel-release && \
+    yum -y install  \
+    initscripts \
+    java-1.8.0-openjdk-devel \
+    libaio \
+    mutt \
+    numactl \
+    openssl \
+    openssl-devel \
+    puppet \
+    python \
+    python-paramiko \
+    tar  \
+    wget && \
+    rm -f /var/lib/rpm/__db.* && \
+    rpm --rebuilddb
 
 RUN mkdir -p /opt/emc/scaleio/{mdm,sds,sds1,sds2,sds3,sds4,gateway,lia}/cfg
 
