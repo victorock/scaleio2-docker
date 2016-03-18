@@ -68,9 +68,9 @@ TB2_NAME=""
 # Build
 
 - The content of this repository is auto-build: <https://hub.docker.com/r/victorock/scaleio2>
-- In case of manual build:
 
 * Auto
+
 ```
 Usage ./build.sh: 3c|5c [sds <ip>]
 Example:
@@ -80,6 +80,7 @@ Example:
 ```
 
 * Manual
+
 ```
 DOCKER_HOST="tcp://IP_HOST1:2376" docker-compose -f config/controller.yaml build
 DOCKER_HOST="tcp://IP_HOST2:2376" docker-compose -f config/controller.yaml build
@@ -97,6 +98,7 @@ DOCKER_HOST="tcp://IP_HOST8:2376" docker-compose -f config/sds.yaml build
 - Run the script and let it go...
 
 * Auto
+
 ```
 Usage ./run.sh: 3c|5c [sds <ip>]
 Example:
@@ -107,6 +109,7 @@ Example:
 ```
 
 * Manual
+
 ```
 DOCKER_HOST="tcp://IP_HOST1:2376" docker-compose -f config/controller.yaml up -d
 DOCKER_HOST="tcp://IP_HOST2:2376" docker-compose -f config/controller.yaml up -d
@@ -126,6 +129,7 @@ DOCKER_HOST="tcp://IP_HOST8:2376" docker-compose -f config/sds.yaml up -d
 * Manual
 
 - stop
+
 ```
 DOCKER_HOST="tcp://IP_HOST1:2376" docker-compose -f config/controller.yaml stop
 DOCKER_HOST="tcp://IP_HOST2:2376" docker-compose -f config/controller.yaml stop
@@ -139,7 +143,9 @@ DOCKER_HOST="tcp://IP_HOST8:2376" docker-compose -f config/sds.yaml stop
 ```
 
 - remove
-*/ATTENTION\:This command removes VOLUMES (DATA).*
+
+*ATTENTION:This command removes VOLUMES (DATA).*
+
 ```
 DOCKER_HOST="tcp://IP_HOST1:2376" docker-compose -f config/controller.yaml rm -fv
 DOCKER_HOST="tcp://IP_HOST2:2376" docker-compose -f config/controller.yaml rm -fv
