@@ -1,0 +1,19 @@
+version: '2'
+services:
+  sio-sds:
+    extends:
+      file: base.yml
+      service: sio-base
+    build: ../sio-sds/
+    image: victorock/scaleio2:sds
+    environment:
+      - "affinity:container!=~sio-sds*"
+    ports:
+      - "7072:7072"
+      - "25640:25640"
+    depends_on:
+      - sio-base
+    volumes_from:
+      - sio-base
+    volumes:
+      - /dev/shm:/dev/shm

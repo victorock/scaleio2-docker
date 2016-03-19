@@ -1,0 +1,94 @@
+## This file deploy all the services required to run ScaleIO
+## Use it to deploy ScaleIO Management Services and Storage nodes in docker-swarm
+version: '2'
+services:
+  mdm1:
+    extends:
+      file: mdm.yml
+      service: sio-mdm
+## Replace node1 by the corresponding one containing the ip of MDM1
+    environment:
+      - "constraint:node==node1"
+
+  mdm2:
+    extends:
+      file: mdm.yml
+      service: sio-mdm
+    environment:
+## Replace node2 by the corresponding one containing the ip of MDM2
+      - "constraint:node==node2"
+
+  mdm3:
+    extends:
+      file: mdm.yml
+      service: sio-mdm
+    environment:
+## Replace node3 by the corresponding one containing the ip of MDM3
+      - "constraint:node==node3"
+
+  tb1:
+    extends:
+      file: tb.yml
+      service: sio-tb
+    environment:
+## Replace node4 by the corresponding one containing the ip of TB1
+      - "constraint:node==node4"
+
+  tb2:
+    extends:
+      file: tb.yml
+      service: sio-tb
+    environment:
+## Replace node5 by the corresponding one containing the ip of TB2
+      - "constraint:node==node5"
+
+  gw1:
+    extends:
+      file: gateway.yml
+      service: sio-gateway
+
+  gw2:
+    extends:
+      file: gateway.yml
+      service: sio-gateway
+
+  gw3:
+    extends:
+      file: gateway.yml
+      service: sio-gateway
+
+  storage1:
+    extends:
+      file: sds.yml
+      service: sio-sds
+## Comment the fragment below in a case where you want to run Controller
+## containers and storage container in the same nodes
+    environment:
+      - "constraint:image!=~scaleio2:mdm*"
+      - "constraint:image!=~scaleio2:tb*"
+      - "constraint:image!=~scaleio2:gateway*"
+##
+
+  storage2:
+    extends:
+      file: sds.yml
+      service: sio-sds
+## Comment the fragment below in a case where you want to run Controller
+## containers and storage container in the same nodes
+    environment:
+      - "constraint:image!=~scaleio2:mdm*"
+      - "constraint:image!=~scaleio2:tb*"
+      - "constraint:image!=~scaleio2:gateway*"
+##
+
+  storage3:
+    extends:
+      file: sds.yml
+      service: sio-sds
+## Comment the fragment below in a case where you want to run Controller
+## containers and storage container in the same nodes
+    environment:
+      - "constraint:image!=~scaleio2:mdm*"
+      - "constraint:image!=~scaleio2:tb*"
+      - "constraint:image!=~scaleio2:gateway*"
+##

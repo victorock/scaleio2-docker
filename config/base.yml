@@ -1,0 +1,20 @@
+version: '2'
+services:
+  sio-base:
+    privileged: true
+    restart: always
+    network_mode: host
+    env_file: config.env
+    build: ../sio-base/
+    image: victorock/scaleio2:base
+    environment:
+      - "affinity:container!=~sio-base*"
+    volumes:
+      - /opt/emc/scaleio/sds
+      - /opt/emc/scaleio/sds1
+      - /opt/emc/scaleio/sds2
+      - /opt/emc/scaleio/sds3
+      - /opt/emc/scaleio/sds4
+      - /opt/emc/scaleio/mdm
+      - /opt/emc/scaleio/gateway
+      - /etc/puppet:/etc/puppet

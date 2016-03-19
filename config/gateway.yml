@@ -1,0 +1,17 @@
+version: '2'
+services:
+  sio-gateway:
+    extends:
+      file: base.yml
+      service: sio-base
+    build: ../sio-gateway/
+    image: victorock/scaleio2:gateway
+    environment:
+      - "affinity:container!=~sio-gateway*"
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - sio-base
+    volumes_from:
+      - sio-base
