@@ -3,11 +3,11 @@
 function 5c_step0(){
   echo "Building MDM3..."
     ( node_mdm3 && \
-      docker-compose -f config/controller.yaml build )&
+      docker-compose -f config/controller.yml build )&
 
   echo "Building TB2..."
     ( node_tb2 && \
-      docker-compose -f config/controller-tb.yaml build )&
+      docker-compose -f config/controller-tb.yml build )&
 }
 
 function 5c_step1(){
@@ -16,11 +16,11 @@ function 5c_step1(){
 
   echo "Starting MDM3..."
   ( node_mdm3 && \
-    docker-compose -f config/controller.yaml up -d )&
+    docker-compose -f config/controller.yml up -d )&
 
   echo "Starting TB2..."
   ( node_tb2 && \
-    docker-compose -f config/controller-tb.yaml up -d )&
+    docker-compose -f config/controller-tb.yml up -d )&
 }
 
 function 5c_step2(){

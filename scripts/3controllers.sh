@@ -3,15 +3,15 @@
 function 3c_step0() {
   echo "Building MDM1.."
   ( node_mdm1 && \
-    docker-compose -f config/controller.yaml build )&
+    docker-compose -f config/controller.yml build )&
 
   echo "Building MDM2.."
   ( node_mdm2 && \
-    docker-compose -f config/controller.yaml build )&
+    docker-compose -f config/controller.yml build )&
 
   echo "Building TB1.."
   ( node_tb1 && \
-    docker-compose -f config/controller-tb.yaml build )&
+    docker-compose -f config/controller-tb.yml build )&
 }
 
 function 3c_step1() {
@@ -20,15 +20,15 @@ function 3c_step1() {
 
   echo "Starting MDM1.."
   ( node_mdm1 && \
-    docker-compose -f config/controller.yaml up -d )&
+    docker-compose -f config/controller.yml up -d )&
 
   echo "Starting MDM2.."
   ( node_mdm2 && \
-    docker-compose -f config/controller.yaml up -d )&
+    docker-compose -f config/controller.yml up -d )&
 
   echo "Starting TB1.."
   ( node_tb1 && \
-    docker-compose -f config/controller-tb.yaml up -d )&
+    docker-compose -f config/controller-tb.yml up -d )&
 }
 
 function 3c_step2() {

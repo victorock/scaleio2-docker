@@ -1,16 +1,22 @@
 #!/bin/bash
 
 function sds_step0(){
-  node_general "${1}"
-  docker-compose -f config/sds.yaml build
+  echo "Building SDS.."
+  ( node_general "${1}" && \
+    docker-compose -f config/storage.yml build )
 }
 
 function sds_step1(){
-  node_general "${1}"
-  docker-compose -f config/sds.yaml up
+  ( node_general "${1}" && \
+    docker-compose -f config/storage.yml up -d )&
 }
 
 function sds_step2(){
-  node_general "${1}"
-  sds_exec
+
+  wait_compose_finish
+  ( node_general "${1}" && sds_exec_start )
+
+  wait_docker_finish
+  ( node_general "${1}" && sds_exec_setup )
+
 }

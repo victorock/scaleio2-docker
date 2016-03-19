@@ -41,7 +41,7 @@ function node_tb2(){
 
 function node_general(){
   server="${1:?'NODE NOT SPECIFIED'}"
-  export DOCKER_HOST="tcp://${server}:2376"
+  export DOCKER_HOST="tcp://${server}:2375"
 }
 
 function mdm_exec_start(){

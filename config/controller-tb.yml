@@ -1,4 +1,4 @@
-version: '2.0'
+version: '2'
 services:
   SIO-BASE:
     restart: always
@@ -22,7 +22,7 @@ services:
     volumes_from:
       - SIO-BASE
     volumes:
-      - /dev/shm
+      - /dev/shm:/dev/shm
 
   SIO-MDM:
     privileged: true
@@ -32,13 +32,15 @@ services:
     build: ../sio-mdm/
     image: victorock/scaleio2:mdm
     container_name: SIO-MDM
+    environment:
+      MDM_ROLE_IS_MANAGER: "0"
     ports:
       - "6611:6611"
       - "9011:9011"
-      - "25620:25620"
+      - "25600:25600"
     depends_on:
       - SIO-BASE
     volumes_from:
       - SIO-BASE
     volumes:
-      - /dev/shm
+      - /dev/shm:/dev/shm

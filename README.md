@@ -1,45 +1,72 @@
 
 # Description
 
-The idea behind the creation of this repository is to have ScaleIO modules easily
-installed and integrated on OpenStack deployments that adopt containers.
+The idea behind the creation of this repository is to easily install/update/upgrade ScaleIO.
 
-The content of this repository implements ScaleIO Version 2.0, and tested with base OS that supports systemd: (CentOS 7.2 - Atomic).
+Follow some scenarios of deployment:
+- OpenStack Controllers
+- Storage Nodes
+- Bare-metal Containers
+- Test/Dev
+- Cloud/Virtualized Infrastructure
+
+The content of this repository implements ScaleIO Version 2.0 and requires systemd supportability.
+Tests were performed on CentOS 7.2 (Atomic).
 
 All the ScaleIO RPM packages are available for download from EMC Website <https://www.emc.com/getscaleio>.
-In order to facilitate the deployment/redeployment/build of ScaleIO containers, the packages therefore mentioned were copied to the repository: <https://dl.bintray.com/victorock/scaleio/centos/$releasever/x86_64/> (Refer: sio-base/config/bintray-victorock-scaleio).
+
+In order to facilitate the deployment/redeployment/build of ScaleIO containers, RPM packages were published in the repository: <https://dl.bintray.com/victorock/scaleio/centos/$releasever/x86_64/> (Ref: sio-base/config/bintray-victorock-scaleio).
 
 *Disclaimer: This content doesn't gives you any rights/official support from EMC.
 So use it with caution.*
 
 # Requirements
-The server were the containers will be deployed need to have at least 3GB of Memory.
 
-*It is due the Java requirements to run ScaleIO Gateway.*
+- Docker connectivity to the Host/Node/Scheduler.
 
+- The server were the Gateway container is deployed requires at least 3GB of Memory (Java Requirement).
+
+- The O.S where containers run must have systemd.
+
+*SDC and XCACHE requires kernel-level interaction, so it must reside directly at the Host.*
+*Consider installing LIA to manage SDC/XCACHE updates/upgrades*
+*You can easily do it through the Gateway portal, automation (ansible/puppet) or O.S image*
 
 # Architecture
 
 * Containers:
-- sio-base: Contains the basic deps for ScaleIO and stores all configuration data.
-- sio-mdm: Run the MDM service and stores all configuration data in <sio-base>.
-- sio-sds: Run the SDS service and stores all configuration data in <sio-base>.
-- sio-gateway: Run the ScaleIO Webservice and stores all configuration data in <sio-base>.
+sio-base: ScaleIO Deps and Volumes (Datastore) for ScaleIO containers.
+sio-mdm: Run the MDM service.
+sio-sds: Run the SDS service.
+sio-gateway: Run the ScaleIO Webservice.
 
-*Puppet is installed inside of all containers.*
+*Puppet is installed inside of all containers*
+*Host /etc/puppet is mounted in sio-base and exported to ScaleIO containers.*
 
 * Docker-Compose:
-- config/controller.yaml: Node with sio-base + sio-mdm + sio-gateway
-- config/controller-tb.yaml: Node with sio-base + sio-mdm as TB + sio-gateway
-- config/sds.yaml: Node with sio-base + sio-sds
-- config/sds1.yaml: Node with sio-base + sio-sds1 (instance 1)
-- config/sds2.yaml: Node with sio-base + sio-sds1 (instance 2)
-- config/sds3.yaml: Node with sio-base + sio-sds1 (instance 3)
-- config/sds4.yaml: Node with sio-base + sio-sds1 (instance 4)
+config/controller.yml: Node with sio-base + sio-mdm + sio-gateway
+config/controller-tb.yml: Node with sio-base + sio-mdm (TB) + sio-gateway
+config/storage.yml: Node with sio-base + sio-sds
+
+* Docker-Compose (SWARM):
+config/docker-composer.yml: Services to launch ScaleIO containers in docker-swarm.
+*Read the config/docker-composer.yml*
+
+* Modules
+
+config/base.yml: ScaleIO configuration datastore
+config/mdm.yml: Node with sio-base + sio-mdm
+config/tb.yml: Node with sio-base + sio-mdm (TB)
+config/gateway.yml: Node with sio-base + sio-gateway
+config/sds.yml: Node with sio-base + sio-sds (default)
+config/sds1.yml: Node with sio-base + sio-sds1 (instance 1)
+config/sds2.yml: Node with sio-base + sio-sds1 (instance 2)
+config/sds3.yml: Node with sio-base + sio-sds1 (instance 3)
+config/sds4.yml: Node with sio-base + sio-sds1 (instance 4)
 
 # Config
 
-* Edit: config/config.env
+Edit config/config.env
 
 ```
 # ScaleIO Password
@@ -66,6 +93,106 @@ TB2=
 TB2_NAME=
 ```
 
+Docker-swarm: Edit config/docker-compose.yml
+
+```
+## This file deploy all the services required to run ScaleIO
+## Use it to deploy ScaleIO Management Services and Storage nodes in docker-swarm
+version: '2'
+services:
+  mdm1:
+    extends:
+      file: mdm.yml
+      service: sio-mdm
+## Replace node1 by the corresponding one containing the ip of MDM1
+    environment:
+      - "constraint:node==node1"
+
+  mdm2:
+    extends:
+      file: mdm.yml
+      service: sio-mdm
+    environment:
+## Replace node2 by the corresponding one containing the ip of MDM2
+      - "constraint:node==node2"
+
+  mdm3:
+    extends:
+      file: mdm.yml
+      service: sio-mdm
+    environment:
+## Replace node3 by the corresponding one containing the ip of MDM3
+      - "constraint:node==node3"
+
+  tb1:
+    extends:
+      file: tb.yml
+      service: sio-tb
+    environment:
+## Replace node4 by the corresponding one containing the ip of TB1
+      - "constraint:node==node4"
+
+  tb2:
+    extends:
+      file: tb.yml
+      service: sio-tb
+    environment:
+## Replace node5 by the corresponding one containing the ip of TB2
+      - "constraint:node==node5"
+
+  gw1:
+    extends:
+      file: gateway.yml
+      service: sio-gateway
+
+  gw2:
+    extends:
+      file: gateway.yml
+      service: sio-gateway
+
+  gw3:
+    extends:
+      file: gateway.yml
+      service: sio-gateway
+
+  storage1:
+    extends:
+      file: sds.yml
+      service: sio-sds
+## Comment the fragment below in a case where you want to run Controller
+## containers and storage container in the same nodes
+    environment:
+      - "constraint:image!=~scaleio2:mdm*"
+      - "constraint:image!=~scaleio2:tb*"
+      - "constraint:image!=~scaleio2:gateway*"
+##
+
+  storage2:
+    extends:
+      file: sds.yml
+      service: sio-sds
+## Comment the fragment below in a case where you want to run Controller
+## containers and storage container in the same nodes
+    environment:
+      - "constraint:image!=~scaleio2:mdm*"
+      - "constraint:image!=~scaleio2:tb*"
+      - "constraint:image!=~scaleio2:gateway*"
+##
+
+  storage3:
+    extends:
+      file: sds.yml
+      service: sio-sds
+## Comment the fragment below in a case where you want to run Controller
+## containers and storage container in the same nodes
+    environment:
+      - "constraint:image!=~scaleio2:mdm*"
+      - "constraint:image!=~scaleio2:tb*"
+      - "constraint:image!=~scaleio2:gateway*"
+##
+
+```
+
 # Build
 
 - The content of this repository is auto-build: <https://hub.docker.com/r/victorock/scaleio2>
@@ -83,22 +210,29 @@ Example:
 * Manual
 
 ```
-DOCKER_HOST="tcp://IP_HOST1:2376" docker-compose -f config/controller.yaml build
-DOCKER_HOST="tcp://IP_HOST2:2376" docker-compose -f config/controller.yaml build
-DOCKER_HOST="tcp://IP_HOST3:2376" docker-compose -f config/controller-tb.yaml build
-DOCKER_HOST="tcp://IP_HOST4:2376" docker-compose -f config/controller.yaml build
-DOCKER_HOST="tcp://IP_HOST5:2376" docker-compose -f config/controller-tb.yaml build
+DOCKER_HOST="tcp://IP_HOST1:2375" docker-compose -f config/controller.yml build
+DOCKER_HOST="tcp://IP_HOST2:2375" docker-compose -f config/controller.yml build
+DOCKER_HOST="tcp://IP_HOST3:2375" docker-compose -f config/controller-tb.yml build
+DOCKER_HOST="tcp://IP_HOST4:2375" docker-compose -f config/controller.yml build
+DOCKER_HOST="tcp://IP_HOST5:2375" docker-compose -f config/controller-tb.yml build
 
-DOCKER_HOST="tcp://IP_HOST6:2376" docker-compose -f config/sds.yaml build
-DOCKER_HOST="tcp://IP_HOST7:2376" docker-compose -f config/sds.yaml build
-DOCKER_HOST="tcp://IP_HOST8:2376" docker-compose -f config/sds.yaml build
+DOCKER_HOST="tcp://IP_HOST6:2375" docker-compose -f config/sds.yml build
+DOCKER_HOST="tcp://IP_HOST7:2375" docker-compose -f config/sds.yml build
+DOCKER_HOST="tcp://IP_HOST8:2375" docker-compose -f config/sds.yml build
 ```
 
 # Run
 
 - Run the script and let it go...
 
-* Auto
+* Docker Swarm
+
+```
+<docker swarm commands>
+docker-compose -f config/docker-compose.yml up -d
+```
+
+* Script
 
 ```
 Usage ./run.sh: 3c|5c [sds <ip>]
@@ -112,35 +246,45 @@ Example:
 * Manual
 
 ```
-DOCKER_HOST="tcp://IP_HOST1:2376" docker-compose -f config/controller.yaml up -d
-DOCKER_HOST="tcp://IP_HOST2:2376" docker-compose -f config/controller.yaml up -d
-DOCKER_HOST="tcp://IP_HOST3:2376" docker-compose -f config/controller-tb.yaml up -d
-DOCKER_HOST="tcp://IP_HOST4:2376" docker-compose -f config/controller.yaml up -d
-DOCKER_HOST="tcp://IP_HOST5:2376" docker-compose -f config/controller-tb.yaml up -d
+DOCKER_HOST="tcp://IP_HOST1:2375" docker-compose -f config/controller.yml up -d
+DOCKER_HOST="tcp://IP_HOST2:2375" docker-compose -f config/controller.yml up -d
+DOCKER_HOST="tcp://IP_HOST3:2375" docker-compose -f config/controller-tb.yml up -d
+DOCKER_HOST="tcp://IP_HOST4:2375" docker-compose -f config/controller.yml up -d
+DOCKER_HOST="tcp://IP_HOST5:2375" docker-compose -f config/controller-tb.yml up -d
 
-DOCKER_HOST="tcp://IP_HOST6:2376" docker-compose -f config/sds.yaml up -d
-DOCKER_HOST="tcp://IP_HOST7:2376" docker-compose -f config/sds.yaml up -d
-DOCKER_HOST="tcp://IP_HOST8:2376" docker-compose -f config/sds.yaml up -d
+DOCKER_HOST="tcp://IP_HOST6:2375" docker-compose -f config/sds.yml up -d
+DOCKER_HOST="tcp://IP_HOST7:2375" docker-compose -f config/sds.yml up -d
+DOCKER_HOST="tcp://IP_HOST8:2375" docker-compose -f config/sds.yml up -d
 ```
 
 # Destroy
 
-- Why? But just in case...
+- Why?
+
+* Docker Swarm
+
+*ATTENTION: All ScaleIO containers are destroyed, so all configuration will be lost!!*
+
+```
+<docker swarm commands>
+docker-compose -f config/docker-compose.yml stop
+docker-compose -f config/docker-compose.yml rm -fv
+```
 
 * Manual
 
 - stop
 
 ```
-DOCKER_HOST="tcp://IP_HOST1:2376" docker-compose -f config/controller.yaml stop
-DOCKER_HOST="tcp://IP_HOST2:2376" docker-compose -f config/controller.yaml stop
-DOCKER_HOST="tcp://IP_HOST3:2376" docker-compose -f config/controller-tb.yaml stop
-DOCKER_HOST="tcp://IP_HOST4:2376" docker-compose -f config/controller.yaml stop
-DOCKER_HOST="tcp://IP_HOST5:2376" docker-compose -f config/controller-tb.yaml stop
+DOCKER_HOST="tcp://IP_HOST1:2375" docker-compose -f config/controller.yml stop
+DOCKER_HOST="tcp://IP_HOST2:2375" docker-compose -f config/controller.yml stop
+DOCKER_HOST="tcp://IP_HOST3:2375" docker-compose -f config/controller-tb.yml stop
+DOCKER_HOST="tcp://IP_HOST4:2375" docker-compose -f config/controller.yml stop
+DOCKER_HOST="tcp://IP_HOST5:2375" docker-compose -f config/controller-tb.yml stop
 
-DOCKER_HOST="tcp://IP_HOST6:2376" docker-compose -f config/sds.yaml stop
-DOCKER_HOST="tcp://IP_HOST7:2376" docker-compose -f config/sds.yaml stop
-DOCKER_HOST="tcp://IP_HOST8:2376" docker-compose -f config/sds.yaml stop
+DOCKER_HOST="tcp://IP_HOST6:2375" docker-compose -f config/sds.yml stop
+DOCKER_HOST="tcp://IP_HOST7:2375" docker-compose -f config/sds.yml stop
+DOCKER_HOST="tcp://IP_HOST8:2375" docker-compose -f config/sds.yml stop
 ```
 
 - remove
@@ -148,23 +292,19 @@ DOCKER_HOST="tcp://IP_HOST8:2376" docker-compose -f config/sds.yaml stop
 *ATTENTION:This command removes VOLUMES (DATA).*
 
 ```
-DOCKER_HOST="tcp://IP_HOST1:2376" docker-compose -f config/controller.yaml rm -fv
-DOCKER_HOST="tcp://IP_HOST2:2376" docker-compose -f config/controller.yaml rm -fv
-DOCKER_HOST="tcp://IP_HOST3:2376" docker-compose -f config/controller-tb.yaml rm -fv
-DOCKER_HOST="tcp://IP_HOST4:2376" docker-compose -f config/controller.yaml rm -fv
-DOCKER_HOST="tcp://IP_HOST5:2376" docker-compose -f config/controller-tb.yaml rm -fv
+DOCKER_HOST="tcp://IP_HOST1:2375" docker-compose -f config/controller.yml rm -fv
+DOCKER_HOST="tcp://IP_HOST2:2375" docker-compose -f config/controller.yml rm -fv
+DOCKER_HOST="tcp://IP_HOST3:2375" docker-compose -f config/controller-tb.yml rm -fv
+DOCKER_HOST="tcp://IP_HOST4:2375" docker-compose -f config/controller.yml rm -fv
+DOCKER_HOST="tcp://IP_HOST5:2375" docker-compose -f config/controller-tb.yml rm -fv
 
-DOCKER_HOST="tcp://IP_HOST6:2376" docker-compose -f config/sds.yaml rm -fv
-DOCKER_HOST="tcp://IP_HOST7:2376" docker-compose -f config/sds.yaml rm -fv
-DOCKER_HOST="tcp://IP_HOST8:2376" docker-compose -f config/sds.yaml rm -fv
+DOCKER_HOST="tcp://IP_HOST6:2375" docker-compose -f config/sds.yml rm -fv
+DOCKER_HOST="tcp://IP_HOST7:2375" docker-compose -f config/sds.yml rm -fv
+DOCKER_HOST="tcp://IP_HOST8:2375" docker-compose -f config/sds.yml rm -fv
 ```
 
 # TODO
 
-- TLS
-- DOCKER-SWARM
-  - CREATE PODs (NX-<SERVICE>)
-- destroy.sh
 - upgrade/update description of commands
 
 # Licensing
