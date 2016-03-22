@@ -12,9 +12,9 @@ ENV MDM1                    ""
 ENV MDM2                    ""
 ENV MDM3                    ""
 
+COPY config/scaleio-gateway-wd.service /etc/systemd/system/
 COPY scripts /usr/local/scripts
 RUN chmod +x /usr/local/scripts/*
 
 EXPOSE 80 443
 VOLUME /dev/shm
-CMD ["/usr/sbin/init"]

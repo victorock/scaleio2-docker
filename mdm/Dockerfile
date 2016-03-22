@@ -6,7 +6,7 @@
 FROM victorock/scaleio2:base
 MAINTAINER "Victor da Costa" <victorockeiro@gmail.com>
 
-ENV PASSWORD            "Scaleio123"
+ENV PASSWORD            "${PASSWORD}"
 ENV MDM_ROLE_IS_MANAGER 1
 
 ENV MDM1                ""
@@ -29,4 +29,3 @@ RUN chmod +x /usr/local/scripts/*
 
 EXPOSE 6611 9011 25620
 VOLUME /dev/shm
-CMD ["/usr/sbin/init"]

@@ -44,28 +44,44 @@ function node_general(){
   export DOCKER_HOST="tcp://${server}:2375"
 }
 
+function tb_exec_start(){
+  docker exec TB /usr/local/scripts/start.sh
+}
+
+function tb_exec_setup(){
+  docker exec TB /usr/local/scripts/setup.sh
+}
+
 function mdm_exec_start(){
-  docker exec SIO-MDM /usr/local/scripts/start.sh
+  docker exec MDM /usr/local/scripts/start.sh
 }
 
 function mdm_exec_setup(){
-  docker exec SIO-MDM /usr/local/scripts/setup.sh
+  docker exec MDM /usr/local/scripts/setup.sh
 }
 
 function gw_exec_start(){
-  docker exec SIO-GW /usr/local/scripts/start.sh
+  docker exec GW /usr/local/scripts/start.sh
 }
 
 function gw_exec_setup(){
-  docker exec SIO-GW /usr/local/scripts/setup.sh
+  docker exec GW /usr/local/scripts/setup.sh
+}
+
+function lia_exec_start(){
+  docker exec LIA /usr/local/scripts/start.sh
+}
+
+function lia_exec_setup(){
+  docker exec LIA /usr/local/scripts/setup.sh
 }
 
 function sds_exec_start(){
   INSTANCE="${1:-}"
-  docker exec SIO-SDS${INSTANCE} /usr/local/scripts/start.sh
+  docker exec SDS${INSTANCE} /usr/local/scripts/start.sh
 }
 
 function sds_exec_setup(){
   INSTANCE="${1:-}"
-  docker exec SIO-SDS${INSTANCE} /usr/local/scripts/setup.sh
+  docker exec SDS${INSTANCE} /usr/local/scripts/setup.sh
 }

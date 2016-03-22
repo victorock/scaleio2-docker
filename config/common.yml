@@ -1,0 +1,7 @@
+version: '2.0'
+services:
+  common:
+    privileged: true
+    restart: always
+    network_mode: host
+    env_file: config.env

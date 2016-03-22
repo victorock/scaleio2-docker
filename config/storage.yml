@@ -1,28 +1,28 @@
 version: '2'
 services:
-  SIO-BASE:
+  BASE:
     privileged: true
     restart: always
     network_mode: host
     env_file: config.env
-    build: ../sio-base/
+    build: ../base/
     image: victorock/scaleio2:base
-    container_name: SIO-BASE
+    container_name: BASE
 
-  SIO-SDS:
+  SDS:
     privileged: true
     restart: always
     network_mode: host
     env_file: config.env
-    build: ../sio-sds/
+    build: ../sds/
     image: victorock/scaleio2:sds
-    container_name: SIO-SDS
+    container_name: SDS
     ports:
       - "7072:7072"
       - "25640:25640"
     depends_on:
-      - SIO-BASE
+      - BASE
     volumes_from:
-      - SIO-BASE
+      - BASE
     volumes:
       - /dev/shm

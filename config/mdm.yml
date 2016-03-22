@@ -1,21 +1,22 @@
 version: '2'
 services:
-  sio-mdm:
+  mdm:
     extends:
-      file: base.yml
-      service: sio-base
-    build: ../sio-mdm/
+      file: common.yml
+      service: common
+    build: ../mdm/
     image: victorock/scaleio2:mdm
     environment:
-      - "affinity:container!=~sio-tb*"
-      - "affinity:container!=~sio-mdm*"
+      - "affinity:container!=~tb*"
+      - "affinity:container!=~mdm*"
     ports:
       - "6611:6611"
       - "9011:9011"
       - "25620:25620"
     depends_on:
-      - sio-base
+      - base
+      - lia
     volumes_from:
-      - sio-base
+      - base
     volumes:
       - /dev/shm:/dev/shm

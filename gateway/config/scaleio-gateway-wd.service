@@ -1,0 +1,12 @@
+# Victor da Costa
+# Alternative for the inittab entry
+[Unit]
+Description=ScaleIO2 Gateway Watchdog
+After=getty.target
+
+[Service]
+ExecStart=/opt/emc/scaleio/gateway/bin/scaleio-gateway-wd.bash > /dev/null 2> /dev/null
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

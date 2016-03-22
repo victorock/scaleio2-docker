@@ -1,10 +1,9 @@
 version: '2'
 services:
   sio-base:
-    privileged: true
-    restart: always
-    network_mode: host
-    env_file: config.env
+    extends:
+      file: common.yml
+      service: common
     build: ../sio-base/
     image: victorock/scaleio2:base
     environment:

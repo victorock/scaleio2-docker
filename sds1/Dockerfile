@@ -6,11 +6,10 @@
 FROM victorock/scaleio2:base
 MAINTAINER "Victor da Costa" <victorockeiro@gmail.com>
 
-ENV INSTANCE ""
+ENV INSTANCE 1
 
 COPY scripts /usr/local/scripts
 RUN chmod +x /usr/local/scripts/*
 
-EXPOSE 7072-7076 25640-25644
+EXPOSE 7073 25641
 VOLUME /dev/shm
-CMD ["/usr/sbin/init"]
