@@ -9,12 +9,14 @@
 function c1-c3(){
   3c_step1
   3c_step2
+  3c_step3
 }
 
 # Deploy Controller 4 to 5
 function c4-c5(){
   5c_step1
   5c_step2
+  5c_step3
 }
 
 # Deploy SDS on SERVER

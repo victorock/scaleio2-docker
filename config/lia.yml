@@ -1,18 +1,16 @@
 version: '2'
 services:
-  gateway:
+  lia:
     extends:
       file: common.yml
       service: common
-    build: ../gateway/
-    image: victorock/scaleio2:gateway
+    build: ../lia/
+    image: victorock/scaleio2:lia
     environment:
-      - "affinity:container!=~gateway*"
+      - "affinity:container!=~lia*"
     ports:
-      - "80:80"
-      - "443:443"
+      - "9099:9099"
     depends_on:
       - base
-      - lia
     volumes_from:
       - base

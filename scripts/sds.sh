@@ -12,11 +12,6 @@ function sds_step1(){
 }
 
 function sds_step2(){
-
-  wait_compose_finish
-  ( node_general "${1}" && sds_exec_start )
-
   wait_docker_finish
-  ( node_general "${1}" && sds_exec_setup )
-
+  ( node_general "${1}" && lia_exec_setup && sds_exec_setup )
 }

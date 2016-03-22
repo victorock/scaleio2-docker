@@ -1,20 +1,20 @@
 version: '2'
 services:
-  sio-sds3:
+  sds3:
     extends:
-      file: base.yml
-      service: sio-base
-    build: ../sio-sds/
-    image: victorock/scaleio2:sds
+      file: common.yml
+      service: common
+    build: ../sds3/
+    image: victorock/scaleio2:sds3
     environment:
-      - "affinity:container!=~sio-sds3*"
+      - "affinity:container!=~sds3*"
       - INSTANCE=3
     ports:
       - "7075:7075"
       - "25643:25643"
     depends_on:
-      - sio-base
+      - base
     volumes_from:
-      - sio-base
+      - base
     volumes:
       - /dev/shm:/dev/shm
