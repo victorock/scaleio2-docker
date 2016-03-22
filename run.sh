@@ -24,6 +24,7 @@ function sds(){
   server="${1:?"SDS SERVER NOT SET"}"
   sds_step1 "${server}"
   sds_step2 "${server}"
+  sds_step3 "${server}"
 }
 
 case $1 in
