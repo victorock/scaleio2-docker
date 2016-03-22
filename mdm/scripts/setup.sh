@@ -52,6 +52,7 @@ function admin_password_change(){
   pass=$2
   new_pass=$3
 
+  admin_login ${master} ${pass}
   scli  --set_password \
         --old_password ${pass} \
         --new_password ${new_pass} \
