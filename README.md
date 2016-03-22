@@ -1,4 +1,3 @@
-
 # Description
 
 The idea behind the creation of this repository is to easily install/update/upgrade ScaleIO.
@@ -30,6 +29,8 @@ Use with caution.*
 - The O.S where containers run must support systemd.
 
 - Containers must run in privileged mode (systemd).
+
+- Disable SELINUX in /etc/selinux/config
 
 *SDC and XCACHE requires kernel-level interaction, so it must reside directly at the Host.*
 *Consider installing LIA to manage SDC/XCACHE updates/upgrades*
@@ -486,6 +487,32 @@ docker-compose -f config/docker-compose.yml up -d
 docker-compose -f config/docker-compose.yml exec /usr/local/scripts/start.sh
 docker-compose -f config/docker-compose.yml exec /usr/local/scripts/setup.sh
 ```
+
+## Configure Cinder (Devstack)
+
+- Edit /etc/cinder/cinder.conf
+
+```
+# Change if exists or add lines below in [DEFAULT] section
+default_volume_type = scaleio-1
+enabled_backends = scaleio-1
+
+[scaleio-1]
+volume_driver = cinder.volume.drivers.emc.scaleio.ScaleIODriver
+volume_backend_name = scaleio-1
+san_ip = 192.168.69.138
+sio_protection_domain_name = PD0
+sio_storage_pool_name = SP0
+sio_storage_pools = PD0:SP0
+san_login = admin
+san_password = "Scaleio123"
+```
+
+# Release Notes
+
+- 0.1a: Initial Version
+
+- 0.1b: Ready 2 go
 
 # Licensing
 
