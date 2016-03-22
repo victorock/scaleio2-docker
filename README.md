@@ -10,7 +10,7 @@ Follow some scenarios of deployment:
 - Test/Dev
 - Cloud/Virtualized Infrastructure
 
-The content of this repository implements ScaleIO Version 2.0 and requires systemd supportability.
+The content of this repository implements ScaleIO Version 2.0 and requires systemd.
 
 Tests were performed on CentOS 7.2 (Atomic).
 
@@ -27,7 +27,9 @@ Use with caution.*
 
 - The server where the Gateway container is deployed requires at least 3GB of Memory (Java Requirement).
 
-- The O.S where containers run must have systemd.
+- The O.S where containers run must support systemd.
+
+- Containers must run in privileged mode (systemd).
 
 *SDC and XCACHE requires kernel-level interaction, so it must reside directly at the Host.*
 *Consider installing LIA to manage SDC/XCACHE updates/upgrades*
@@ -35,67 +37,81 @@ Use with caution.*
 
 ## Architecture
 
+Systemd is used inside of containers to start/stop ScaleIO services.
+
+*There is no other service started by systemd*
+
+* Content and Scripting:
+
+1) File /usr/local/scripts/start.sh is called when the non base containers starts.
+
+2) File /usr/local/scripts/setup.sh is called to proceed with configuration.
+
+3) Puppet is installed inside of all containers.
+
+3.1) Host:/etc/puppet is mounted in base:/etc/puppet and exported to ScaleIO container:/etc/puppet.
+
+3.2) You can link the base:/etc/puppet with your puppet container.
+
+Future) File /usr/local/scripts/setup.sh triggers puppet to proceed with container configuration.
+
+Future) Puppet module for scaleio2 is under development in <http://www.github.com/victorock/puppet-scaleio2>
+
 * Containers:
 
-base: ScaleIO Deps and Volumes (Datastore) for ScaleIO containers.
+- victorock/scaleio2:base     = Deps and Volumes (Datastore) for ScaleIO containers.
 
-lia: Run the LIA service (controller).
+- victorock/scaleio2:mdm      = Run the MDM service.
 
-gateway: Run the ScaleIO Webservice.
+- victorock/scaleio2:tb       = Run the MDM service as TB.
 
-mdm: Run the MDM service.
+- victorock/scaleio2:sds      = Run the SDS service.
 
-mdm: Run the MDM service as TB.
+- victorock/scaleio2:sds1     = Run the SDS1 service.
 
-sds: Run the SDS service.
+- victorock/scaleio2:sds2     = Run the SDS2 service.
 
-sds1: Run the SDS1 service.
+- victorock/scaleio2:sds3     = Run the SDS3 service.
 
-sds2: Run the SDS2 service.
+- victorock/scaleio2:sds4     = Run the SDS4 service.
 
-sds3: Run the SDS3 service.
+- victorock/scaleio2:lia      = Run the LIA service (controller).
 
-sds4: Run the SDS4 service.
-
-*1) File /usr/local/scripts/start.sh is called when the non base containers start.
-2)  File /usr/local/scripts/setup.sh is called to proceed with configuration.
-3)  Puppet is installed inside of all containers.
-    Host /etc/puppet is mounted in base and exported to ScaleIO containers.
-Future) File /usr/local/scripts/setup.sh triggers puppet to proceed with container configuration.*
+- victorock/scaleio2:gateway  = Run the ScaleIO Webservice.
 
 ### Docker-Compose:
 
-config/controller.yml: Node with base + lia + mdm + gateway
+- config/controller.yml: Node with base + lia + mdm + gateway
 
-config/controller-tb.yml: Node with base + lia + tb + gateway
+- config/controller-tb.yml: Node with base + lia + tb + gateway
 
-config/storage.yml: Node with base + sds
+- config/storage.yml: Node with base + sds
 
 ### Docker-Compose (SWARM):
 
-config/docker-composer.yml: Services to launch ScaleIO containers in docker-swarm.
+- config/docker-composer.yml: Services to launch ScaleIO containers in docker-swarm.
 
 *Read the config/docker-composer.yml*
 
 ### Modules
 
-config/base.yml: ScaleIO configuration datastore
+- config/base.yml: ScaleIO configuration datastore
 
-config/mdm.yml: Node with base + mdm
+- config/mdm.yml: Node with base + mdm
 
-config/tb.yml: Node with base + mdm (TB)
+- config/tb.yml: Node with base + mdm (TB)
 
-config/gateway.yml: Node with base + gateway
+- config/gateway.yml: Node with base + gateway
 
-config/sds.yml: Node with base + sds (default)
+- config/sds.yml: Node with base + sds (default)
 
-config/sds1.yml: Node with base + sds1 (instance 1)
+- config/sds1.yml: Node with base + sds1 (instance 1)
 
-config/sds2.yml: Node with base + sds1 (instance 2)
+- config/sds2.yml: Node with base + sds1 (instance 2)
 
-config/sds3.yml: Node with base + sds1 (instance 3)
+- config/sds3.yml: Node with base + sds1 (instance 3)
 
-config/sds4.yml: Node with base + sds1 (instance 4)
+- config/sds4.yml: Node with base + sds1 (instance 4)
 
 ## Config
 
@@ -127,6 +143,8 @@ TB2_NAME=
 ```
 
 ### Docker-swarm: Edit config/docker-compose.yml
+
+*NOT TESTED*
 
 ```
 ## This file deploy all the services required to run ScaleIO
@@ -263,10 +281,13 @@ Run the script and let it go...
 
 ### Docker Swarm
 
+*NOT TESTED*
+
 ```
 <docker swarm commands>
 docker-compose -f config/docker-compose.yml up -d
 docker-compose -f config/docker-compose.yml exec /usr/local/scripts/start.sh
+docker-compose -f config/docker-compose.yml exec /usr/local/scripts/setup.sh
 ```
 
 ### Script
@@ -367,7 +388,7 @@ docker-compose -f config/docker-compose.yml rm -fv
 
 ### Manual
 
-Stop
+- Stop
 
 ```
 DOCKER_HOST="tcp://IP_HOST1:2375" docker-compose -f config/controller.yml stop
@@ -381,7 +402,7 @@ DOCKER_HOST="tcp://IP_HOST7:2375" docker-compose -f config/sds.yml stop
 DOCKER_HOST="tcp://IP_HOST8:2375" docker-compose -f config/sds.yml stop
 ```
 
-Remove
+- Remove
 
 *ATTENTION:This command removes VOLUMES (DATA).*
 
@@ -400,8 +421,66 @@ DOCKER_HOST="tcp://IP_HOST8:2375" docker-compose -f config/sds.yml rm -fv
 # TODO
 
 - ScaleIO Discovery Service
-- LIA integration
-- upgrade/update description of commands
+- Test upgrade/update
+- Test with Swarm
+
+# Tips
+
+## Docker Configuration to listen for TCP connections
+
+```
+# /etc/sysconfig/docker
+OPTIONS='--selinux-enabled -H tcp://0.0.0.0:2375'
+```
+
+## Docker Storage configuration to disable deferred_removal and deferred_deletion
+
+```
+# /etc/sysconfig/docker-storage
+DOCKER_STORAGE_OPTIONS=--storage-driver devicemapper --storage-opt dm.fs=xfs --storage-opt dm.thinpooldev=/dev/mapper/cah-docker--pool --storage-opt dm.use_deferred_removal=false --storage-opt dm.use_deferred_deletion=false
+```
+
+## Install Docker Swarm
+
+*Doc: https://docs.docker.com/swarm/install-w-machine/*
+
+- Create Master node
+
+```
+docker-machine create --driver vmwarefusion swarm
+docker-machine env swarm
+eval $(docker-machine env swarm)
+docker-machine ls
+docker run --rm swarm create
+
+docker run -d -p 3376:3376 \
+            -t \
+            swarm manage \
+              -H 0.0.0.0:3376 \
+              token://<cluster_token>
+```
+
+- Add slave nodes
+
+```
+DOCKER_HOST="tcp://IP_HOST1:2375" docker run -d swarm join \
+  --addr=<ip_master>:2375 token://<cluster_token>
+
+DOCKER_HOST="tcp://IP_HOST2:2375" docker run -d swarm join \
+  --addr=<ip_master>:2375 token://<cluster_token>
+
+DOCKER_HOST="tcp://IP_HOST3:2375" docker run -d swarm join \
+  --addr=<ip_master>:2375 token://<cluster_token>
+```
+
+- Run ScaleIO in Swarm
+
+```
+export DOCKER_HOST=$(docker-machine ip swarm):3376
+docker-compose -f config/docker-compose.yml up -d
+docker-compose -f config/docker-compose.yml exec /usr/local/scripts/start.sh
+docker-compose -f config/docker-compose.yml exec /usr/local/scripts/setup.sh
+```
 
 # Licensing
 
