@@ -16,7 +16,7 @@ Tests were performed on CentOS 7.2 (Atomic).
 
 All the ScaleIO RPM packages are available for download from EMC Website <https://www.emc.com/getscaleio>.
 
-In order to facilitate the deployment/redeployment/build of ScaleIO containers, RPM packages were published in the repository: <https://dl.bintray.com/victorock/scaleio/centos/$releasever/x86_64/> (Ref: base/config/bintray-victorock-scaleio).
+ScaleIO RPM packages were published in the repository: <https://dl.bintray.com/victorock/scaleio/centos/$releasever/x86_64/> (See: base/config/bintray-victorock-scaleio).
 
 *Disclaimer: This content doesn't gives you any rights/official support from EMC.
 Use with caution.*
@@ -43,9 +43,9 @@ Systemd is used inside of containers to start/stop ScaleIO services.
 
 ### Content and Scripting:
 
-- File /usr/local/scripts/start.sh is called when the non base containers starts.
+- Call /usr/local/scripts/start.sh to trigger installation of specific packages.
 
-- File /usr/local/scripts/setup.sh is called to proceed with configuration.
+- Call /usr/local/scripts/setup.sh to trigger configuration.
 
 - Puppet is installed inside of all containers.
 
