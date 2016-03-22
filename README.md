@@ -41,23 +41,23 @@ Systemd is used inside of containers to start/stop ScaleIO services.
 
 *There is no other service started by systemd*
 
-* Content and Scripting:
+### Content and Scripting:
 
-1) File /usr/local/scripts/start.sh is called when the non base containers starts.
+- File /usr/local/scripts/start.sh is called when the non base containers starts.
 
-2) File /usr/local/scripts/setup.sh is called to proceed with configuration.
+- File /usr/local/scripts/setup.sh is called to proceed with configuration.
 
-3) Puppet is installed inside of all containers.
+- Puppet is installed inside of all containers.
 
-3.1) Host:/etc/puppet is mounted in base:/etc/puppet and exported to ScaleIO container:/etc/puppet.
+- Host:/etc/puppet is mounted in base:/etc/puppet and exported to ScaleIO container:/etc/puppet.
 
-3.2) You can link the base:/etc/puppet with your puppet container.
+- You change the configuration to link the base:/etc/puppet with your puppet container.
 
-Future) File /usr/local/scripts/setup.sh triggers puppet to proceed with container configuration.
+- Future: File /usr/local/scripts/setup.sh triggers puppet to proceed with container configuration.
 
-Future) Puppet module for scaleio2 is under development in <http://www.github.com/victorock/puppet-scaleio2>
+- Future: Puppet module for scaleio2 is under development in <http://www.github.com/victorock/puppet-scaleio2>
 
-* Containers:
+### Containers:
 
 - victorock/scaleio2:base     = Deps and Volumes (Datastore) for ScaleIO containers.
 
