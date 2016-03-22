@@ -43,9 +43,14 @@ Systemd is used inside of containers to start/stop ScaleIO services.
 
 ### Content and Scripting:
 
-- Call /usr/local/scripts/start.sh to trigger installation of specific packages.
 
-- Call /usr/local/scripts/setup.sh to trigger configuration.
+- Call/Exec /usr/local/scripts/start.sh to trigger installation of specific packages.
+
+*Required to support auto-build and datastore container*
+
+- Call/Exec /usr/local/scripts/setup.sh to trigger configuration.
+
+*Required to support auto-build and datastore container*
 
 - Puppet is installed inside of all containers.
 
