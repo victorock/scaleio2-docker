@@ -15,7 +15,6 @@ services:
       - "25620:25620"
     depends_on:
       - base
-      - lia
     volumes_from:
       - base
     volumes:

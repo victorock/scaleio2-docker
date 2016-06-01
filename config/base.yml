@@ -1,13 +1,13 @@
 version: '2'
 services:
-  sio-base:
+  base:
     extends:
       file: common.yml
       service: common
-    build: ../sio-base/
+    build: ../base/
     image: victorock/scaleio2:base
     environment:
-      - "affinity:container!=~sio-base*"
+      - "affinity:container!=~base*"
     volumes:
       - /opt/emc/scaleio/sds
       - /opt/emc/scaleio/sds1

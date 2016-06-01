@@ -490,6 +490,10 @@ docker-compose -f config/docker-compose.yml exec /usr/local/scripts/setup.sh
 
 ## Configure Cinder (Devstack)
 
+- Create in ScaleIO Protection Domain: PD0
+
+- Create in ScaleIO Storage Pool: SP0
+
 - Edit /etc/cinder/cinder.conf
 
 ```
@@ -500,7 +504,7 @@ enabled_backends = scaleio-1
 [scaleio-1]
 volume_driver = cinder.volume.drivers.emc.scaleio.ScaleIODriver
 volume_backend_name = scaleio-1
-san_ip = 192.168.69.138
+san_ip = <ScaleIOGWIP>
 sio_protection_domain_name = PD0
 sio_storage_pool_name = SP0
 sio_storage_pools = PD0:SP0
